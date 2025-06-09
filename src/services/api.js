@@ -2,11 +2,13 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'https://dailytest-client.vercel.app/', // Your backend URL
-    headers: {
-        'Content-Type': 'application/json',
-    },
+  baseURL: 'https://dailytest-backend.onrender.com', // ✅ Your backend URL
+  withCredentials: true,
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
+
 
 // Removed the request interceptor that added the token header.
 // api.interceptors.request.use(
