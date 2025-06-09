@@ -1,36 +1,45 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 function Timer({ initialTime, onTimeUpdate, active }) {
     const [time, setTime] = useState(initialTime);
+    const intervalRef = useRef(null);
+    const onTimeUpdateRef = useRef(onTimeUpdate);
 
     useEffect(() => {
-        setTime(initialTime); // Reset time when initialTime changes (e.g., next question)
+        onTimeUpdateRef.current = onTimeUpdate;
+    }, [onTimeUpdate]);
+
+    useEffect(() => {
+        setTime(initialTime);
     }, [initialTime]);
 
     useEffect(() => {
         if (!active) {
-            return; // Stop timer if not active
+            clearInterval(intervalRef.current);
+            return;
         }
 
-        const timer = setInterval(() => {
-            setTime((prevTime) => {
-                if (prevTime <= 1) {
-                    clearInterval(timer);
-                    onTimeUpdate(0); // Notify parent that time is up
-                    return 0;
-                }
-                onTimeUpdate(prevTime - 1); // Notify parent of time change
-                return prevTime - 1;
+        intervalRef.current = setInterval(() => {
+            setTime(prev => {
+                const newTime = prev - 1;
+                return newTime >= 0 ? newTime : 0;
             });
         }, 1000);
 
-        return () => clearInterval(timer); // Cleanup on unmount or if active becomes false
-    }, [active, onTimeUpdate]);
+        return () => clearInterval(intervalRef.current);
+    }, [active]);
+
+    // 🔄 Notify parent when `time` changes
+    useEffect(() => {
+        if (active && onTimeUpdateRef.current) {
+            onTimeUpdateRef.current(time);
+        }
+    }, [time, active]);
 
     const formatTime = (seconds) => {
-        const minutes = Math.floor(seconds / 60);
-        const remainingSeconds = seconds % 60;
-        return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+        const min = Math.floor(seconds / 60);
+        const sec = seconds % 60;
+        return `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
     };
 
     return (

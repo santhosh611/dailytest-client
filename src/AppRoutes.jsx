@@ -9,6 +9,7 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 import ManageDepartments from './pages/admin/ManageDepartments';
 import ManageWorkers from './pages/admin/ManageWorkers';
 import GenerateQuestions from './pages/admin/GenerateQuestions';
+import QuestionHistory from './pages/admin/QuestionHistory'; // Import new component
 import WorkerDashboard from './pages/worker/WorkerDashboard';
 import WorkerTestPage from './pages/worker/WorkerTestPage';
 import ScoreboardPage from './pages/ScoreboardPage';
@@ -57,6 +58,7 @@ function AppRoutes() {
                 <Route path="departments" element={<ManageDepartments />} />
                 <Route path="workers" element={<ManageWorkers />} />
                 <Route path="questions" element={<GenerateQuestions />} />
+                <Route path="question-history" element={<QuestionHistory />} />
             </Route>
             {/* Corrected Worker Routes */}
             <Route

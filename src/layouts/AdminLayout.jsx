@@ -61,7 +61,7 @@ function AdminLayout() {
                         <li>
                             <Link to="/admin/workers" className="flex items-center space-x-3 hover:text-blue-300" onClick={() => setIsSidebarOpen(false)}>
                                 <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H2m2-2a4 4 0 108 0H4zm16a4 4 0 11-8 0m-4-3V9m2-2h2a2 2 0 012 2v4m-6 0H9m-6 4h4" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" />
                                 </svg>
                                 <span>Manage Workers</span>
                             </Link>
@@ -74,6 +74,14 @@ function AdminLayout() {
                                 <span>Generate Questions</span>
                             </Link>
                         </li>
+                        <li>
+    <Link to="/admin/question-history" className="flex items-center space-x-3 hover:text-blue-300" onClick={() => setIsSidebarOpen(false)}>
+        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+        </svg>
+        <span>Question History</span>
+    </Link>
+</li>
                         <li>
                             <Link to="/scoreboard" className="flex items-center space-x-3 hover:text-blue-300" onClick={() => setIsSidebarOpen(false)}>
                                 <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

@@ -3,8 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 import { useAuth } from '../../hooks/useAuth';
-import InputField from '../../components/common/InputField'; // <-- Ensure this is imported!
-import Button from '../../components/common/Button'; // Ensure this is imported!
+import InputField from '../../components/common/InputField';
+import Button from '../../components/common/Button';
 
 function WorkerDashboard() {
     const [workers, setWorkers] = useState([]); // Used for admin view
@@ -12,6 +12,7 @@ function WorkerDashboard() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [hasTests, setHasTests] = useState(false); // State to track if tests are available for worker
+    const [testAlreadyTaken, setTestAlreadyTaken] = useState(false); // <-- NEW STATE
 
     const navigate = useNavigate();
     const { user } = useAuth(); // The currently logged-in user (from localStorage)
@@ -21,24 +22,26 @@ function WorkerDashboard() {
             setLoading(true);
             setError('');
             setHasTests(false); // Reset this state on each fetch
+            setTestAlreadyTaken(false); // <-- Reset new state
 
             try {
                 if (user?.role === 'admin') {
                     // Admin view: fetch all workers for management
                     const res = await api.get('/workers');
                     setWorkers(res.data);
-                } else if (user?.role === 'worker' && user?.department?._id) {
+                } else if (user?.role === 'worker' && user?.department?._id && user?._id) { // Ensure user._id exists
                     // Worker view: check for available tests for their department
-                    const questionsRes = await api.get(`/questions/${user.department._id}`);
+                    // Modified: Pass workerId in the URL now
+                    const questionsRes = await api.get(`/questions/${user.department._id}/${user._id}`); 
                     if (questionsRes.data && questionsRes.data.length > 0) {
                         setHasTests(true); // Tests are available if questions are returned
                     } else {
                         setHasTests(false); // No questions, so no tests
                     }
                 } else {
-                    // Not a recognized user role or missing department info, redirect to home
+                    // Not a recognized user role or missing info, redirect to home
                     setWorkers([]); // Clear any previous worker data
-                    setError('User not logged in or missing department info.');
+                    setError('User not logged in or missing department/worker info.');
                     if (window.location.pathname !== '/') {
                         navigate('/'); // Only navigate if not already on homepage
                     }
@@ -48,6 +51,10 @@ function WorkerDashboard() {
                 if (err.response && err.response.status === 404 && user?.role === 'worker') {
                     setHasTests(false); // No questions found for department
                     setError(''); // Clear general error as 404 is expected for 'no questions'
+                } else if (err.response && err.response.status === 403) { // <-- NEW: Handle 403 response
+                    setTestAlreadyTaken(true);
+                    setError(err.response?.data?.message || 'You have already taken the test for today.');
+                    setHasTests(false); // No new tests available
                 } else {
                     setError(err.response?.data?.message || 'Failed to load dashboard data.');
                 }
@@ -59,14 +66,15 @@ function WorkerDashboard() {
     }, [user, navigate]);
 
     const handleTakeTest = () => {
-        if (user.department && user.department._id) {
+        if (user.department && user.department._id && user._id) {
             navigate(`/worker/${user._id}/test/${user.department._id}`);
         } else {
-            alert('Your profile does not have a department assigned. Please contact admin.');
+            alert('Your profile does not have a department or worker ID assigned. Please contact admin.');
         }
     };
 
     if (user?.role === 'admin') {
+        // ... (Admin view code remains the same)
         const filteredWorkers = workers.filter(worker =>
             worker.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             (worker.workerId && worker.workerId.toLowerCase().includes(searchTerm.toLowerCase()))
@@ -114,12 +122,6 @@ function WorkerDashboard() {
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{worker.workerId}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{worker.department?.name || 'N/A'}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            <Button
-                                                onClick={() => handleTakeTest(worker)} // Admin can initiate a test for any worker
-                                                className="text-indigo-600 hover:text-indigo-900 mr-4"
-                                            >
-                                                View Worker's Test
-                                            </Button>
                                             {/* Admin specific edit/delete buttons for worker management would go here */}
                                         </td>
                                     </tr>
@@ -136,12 +138,12 @@ function WorkerDashboard() {
         if (loading) {
             return (
                 <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-                    <p className="text-gray-700">Loading your test availability...</p>
+                    <p className="text-gray-700">Checking test availability...</p>
                 </div>
             );
         }
 
-        if (error) {
+        if (error && !testAlreadyTaken) { // Show general error if not already taken
             return (
                 <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
                     <p className="text-red-600">Error: {error}</p>
@@ -149,7 +151,7 @@ function WorkerDashboard() {
             );
         }
 
-        if (!loggedInWorker || !loggedInWorker.department?._id) {
+        if (!loggedInWorker || !loggedInWorker.department?._id || !loggedInWorker._id) {
             return (
                 <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
                     <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-sm text-center">
@@ -167,8 +169,12 @@ function WorkerDashboard() {
                     <p className="text-gray-600 mb-4">Department: {loggedInWorker.department?.name || 'N/A'}</p>
                     <p className="text-gray-600 mb-6">ID: {loggedInWorker.workerId}</p>
 
-                    {/* Conditional rendering for the "Start Test" button or "No Tests" message */}
-                    {hasTests ? (
+                    {testAlreadyTaken ? ( // <-- NEW: Display if test already taken
+                         <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4" role="alert">
+                            <p className="font-bold mb-2">Test Already Taken</p>
+                            <p>{error}</p> {/* Display the specific message from backend */}
+                        </div>
+                    ) : hasTests ? (
                         <Button
                             onClick={handleTakeTest}
                             className="w-full bg-green-600 text-white py-3 rounded-md hover:bg-green-700 text-lg"
