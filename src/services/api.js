@@ -2,11 +2,10 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://dailytest-backend.onrender.com', // ✅ Your backend URL
-  withCredentials: true,
-  headers: {
-    'Content-Type': 'application/json',
-  },
+    baseURL: 'https://dailytest-backend.onrender.com', // Your backend URL
+    headers: {
+        'Content-Type': 'application/json',
+    },
 });
 
 
