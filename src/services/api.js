@@ -1,26 +1,15 @@
 // frontend/src/services/api.js
 import axios from 'axios';
 
+
+const API_BASE_URL = import.meta.env.VITE_APP_API_BASE_URL || 'http://localhost:5000';
+
 const api = axios.create({
-    baseURL: 'https://dailytest-backend.onrender.com', // Your backend URL
+    baseURL: API_BASE_URL, // Use the dynamically determined base URL
     headers: {
         'Content-Type': 'application/json',
     },
 });
 
-
-// Removed the request interceptor that added the token header.
-// api.interceptors.request.use(
-//     (config) => {
-//         const token = localStorage.getItem('token');
-//         if (token) {
-//             config.headers.Authorization = `Bearer ${token}`;
-//         }
-//         return config;
-//     },
-//     (error) => {
-//         return Promise.reject(error);
-//     }
-// );
 
 export default api;
