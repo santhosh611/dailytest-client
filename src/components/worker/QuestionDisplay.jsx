@@ -1,7 +1,8 @@
 // frontend/src/components/worker/QuestionDisplay.jsx
 import React from 'react';
 
-function QuestionDisplay({ question, selectedAnswer, handleAnswerSelect, answerSelectedForCurrentQuestion, timerActive }) {
+// Change 'handleAnswerSelect' to 'onOptionSelect' to match the prop name from WorkerTestPage.jsx
+function QuestionDisplay({ question, selectedAnswer, onOptionSelect, answerSelectedForCurrentQuestion, timerActive }) {
     if (!question) {
         return <p>Loading question...</p>;
     }
@@ -14,12 +15,13 @@ function QuestionDisplay({ question, selectedAnswer, handleAnswerSelect, answerS
                     <div
                         key={index}
                         className={`p-3 border rounded-lg cursor-pointer transition-all duration-200
-                            ${selectedAnswer === option 
-                                ? 'bg-blue-200 border-blue-600 text-blue-900 font-semibold' 
+                            ${selectedAnswer === option
+                                ? 'bg-blue-200 border-blue-600 text-blue-900 font-semibold'
                                 : 'bg-gray-50 hover:bg-gray-100 border-gray-200'
                             }
-                            ${answerSelectedForCurrentQuestion || !timerActive ? 'opacity-70 cursor-not-allowed' : ''} `} 
-                        onClick={() => handleAnswerSelect(option)}
+                            ${answerSelectedForCurrentQuestion || !timerActive ? 'opacity-70 cursor-not-allowed' : ''} `}
+                        // Use onOptionSelect here
+                        onClick={() => onOptionSelect(option)}
                     >
                         {option}
                     </div>
