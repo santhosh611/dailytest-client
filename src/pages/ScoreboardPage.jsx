@@ -1,4 +1,5 @@
-import React, { useState, useEffect }  from 'react';
+// frontend/src/pages/ScoreboardPage.jsx
+import React, { useState, useEffect } from 'react';
 import api from '../services/api';
 import Button from '../components/common/Button';
 
@@ -85,7 +86,8 @@ function ScoreboardPage() {
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
                                 {scores.map((scoreEntry) => (
-                                    <tr key={scoreEntry._id}>
+                                    // Construct a unique key using worker and department IDs
+                                    <tr key={`${scoreEntry.worker._id}-${scoreEntry.department._id}`}>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <div className="text-sm font-medium text-gray-900">
                                                 {scoreEntry.worker ? scoreEntry.worker.name : 'N/A'}
