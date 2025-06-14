@@ -1,30 +1,41 @@
 // frontend/src/components/worker/QuestionDisplay.jsx
 import React from 'react';
 
-// Change 'handleAnswerSelect' to 'onOptionSelect' to match the prop name from WorkerTestPage.jsx
-function QuestionDisplay({ question, selectedAnswer, onOptionSelect, answerSelectedForCurrentQuestion, timerActive }) {
+function QuestionDisplay({ question, selectedOption, onOptionSelect, answerSelectedForCurrentQuestion, timerActive }) {
     if (!question) {
         return <p>Loading question...</p>;
     }
+
+    // Determine if the options should be disabled based on game state
+    const shouldDisableOptions = answerSelectedForCurrentQuestion || !timerActive;
 
     return (
         <div>
             <p className="text-lg font-medium text-gray-900 mb-4">{question.questionText}</p>
             <div className="space-y-3">
                 {question.options.map((option, index) => (
-                    <div
+                    <label
                         key={index}
-                        className={`p-3 border rounded-lg cursor-pointer transition-all duration-200
-                            ${selectedAnswer === option
+                        // Apply styling based on selection and disabled state
+                        className={`flex items-center p-3 border rounded-lg cursor-pointer transition-all duration-200
+                            ${selectedOption === index
                                 ? 'bg-blue-200 border-blue-600 text-blue-900 font-semibold'
                                 : 'bg-gray-50 hover:bg-gray-100 border-gray-200'
                             }
-                            ${answerSelectedForCurrentQuestion || !timerActive ? 'opacity-70 cursor-not-allowed' : ''} `}
-                        // Use onOptionSelect here
-                        onClick={() => onOptionSelect(option)}
+                            ${shouldDisableOptions ? 'opacity-70 cursor-not-allowed' : ''}
+                        `}
                     >
-                        {option}
-                    </div>
+                        <input
+                            type="radio"
+                            name={`question-${question._id}`} // Unique name for radio group
+                            value={index} // The value is the index
+                            checked={selectedOption === index} // Controlled component: reflects selectedOption state
+                            onChange={() => onOptionSelect(index)} // ONLY use onChange here for selection logic
+                            disabled={shouldDisableOptions} // Disable the radio input itself
+                            className="form-radio h-5 w-5 text-blue-600"
+                        />
+                        <span className="ml-3 text-lg">{option}</span>
+                    </label>
                 ))}
             </div>
         </div>
