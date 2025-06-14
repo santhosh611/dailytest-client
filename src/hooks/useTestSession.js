@@ -24,9 +24,17 @@ const useTestSession = (workerId, departmentId) => {
         setIsLoading(true);
         setError(null);
         try {
-            // UPDATED: Changed endpoint to /questions/:departmentId/:workerId
-            // This endpoint now handles both starting a new test and resuming an existing one.
             const response = await api.get(`/questions/${departmentId}/${workerId}`);
+
+            // ADDED: Check if response.data is valid and contains expected properties
+            if (!response.data || !response.data.questionStartTime || !response.data.durationPerQuestion || !response.data.questions) {
+                console.error('Backend response data is incomplete:', response.data);
+                setError('Failed to load test session: Incomplete data from server.');
+                setTestStatus('error');
+                setIsLoading(false);
+                return;
+            }
+
             const {
                 testAttemptId: fetchedTestAttemptId,
                 currentQuestionIndex: fetchedIndex,
@@ -39,27 +47,26 @@ const useTestSession = (workerId, departmentId) => {
             setTestAttemptId(fetchedTestAttemptId);
             setQuestions(fetchedQuestions);
             setCurrentQuestionIndex(fetchedIndex);
-            setQuestionStartTime(new Date(fetchedStartTime)); // Convert string to Date object
+            setQuestionStartTime(new Date(fetchedStartTime)); // Ensure this is a valid Date string
             setDurationPerQuestion(fetchedDuration);
             setTestStatus(fetchedStatus);
 
         } catch (err) {
-            console.error('Failed to load test session:', err);
-            // Handle specific status codes, e.g., 403 for already completed test
+            console.error('Failed to load test session (frontend catch):', err.response?.data?.message || err.message, err);
             if (err.response && err.response.status === 403) {
                 setError(err.response.data.message);
-                setTestStatus('completed'); // Or 'taken'
+                setTestStatus('completed');
             } else if (err.response && err.response.status === 404) {
                 setError(err.response.data.message);
                 setTestStatus('no-test');
             } else {
-                setError(err.response?.data?.message || 'Failed to load test session.');
+                setError(err.response?.data?.message || 'Failed to load test session. Please try again.');
                 setTestStatus('error');
             }
         } finally {
             setIsLoading(false);
         }
-    }, [workerId, departmentId, setError, setIsLoading, setTestStatus]); // Added setTestStatus to dependencies
+    }, [workerId, departmentId, setError, setIsLoading, setTestStatus]);// Added setTestStatus to dependencies
 
     // Function to update test progress on the backend
     const updateTestProgress = useCallback(async (newIndex, newStartTime) => {
