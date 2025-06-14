@@ -1,10 +1,10 @@
-// frontend/src/pages/admin/QuestionHistory.jsx
+// test/frontend/src/pages/admin/QuestionHistory.jsx
 import React from 'react';
 import { useState, useEffect, useCallback } from 'react';
 import api from '../../services/api';
 import InputField from '../../components/common/InputField';
 import Button from '../../components/common/Button';
-import jsPDF from 'jspdf'; // Import jsPDF
+import jsPDF from 'jspdf';
 
 function QuestionHistory() {
     const [questions, setQuestions] = useState([]);
@@ -12,7 +12,7 @@ function QuestionHistory() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [filters, setFilters] = useState({ departmentId: '', topic: '' });
-    const [selectedDepartmentName, setSelectedDepartmentName] = useState('All Departments'); // New state for selected department name
+    const [selectedDepartmentName, setSelectedDepartmentName] = useState('All Departments');
     const [selectedDate, setSelectedDate] = useState('');
     const [showResults, setShowResults] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
@@ -50,7 +50,6 @@ function QuestionHistory() {
             setQuestions(res.data);
             setShowResults(true);
 
-            // Update selected department name for PDF header
             const currentDepartment = departments.find(d => d._id === filters.departmentId);
             setSelectedDepartmentName(currentDepartment ? currentDepartment.name : 'All Departments');
 
@@ -92,15 +91,13 @@ function QuestionHistory() {
 
     const handleDownloadPdf = () => {
         const doc = new jsPDF();
-        let yPos = 10; // Initial Y position
+        let yPos = 10;
 
-        // Set font styles for title
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(18);
         doc.text('Question History Report', 10, yPos);
         yPos += 10;
 
-        // Add header information
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(12);
         doc.text(`Topic: ${filters.topic || 'All Topics'}`, 10, yPos);
@@ -108,23 +105,20 @@ function QuestionHistory() {
         doc.text(`Department: ${selectedDepartmentName}`, 10, yPos);
         yPos += 7;
         doc.text(`Date: ${selectedDate || 'All Dates'}`, 10, yPos);
-        yPos += 10; // Line gap
+        yPos += 10;
 
-        // Check if there are questions to display
         if (filteredAndSearchedQuestions.length === 0) {
             doc.text('No questions found for the selected criteria.', 10, yPos);
             doc.save('question_history_report.pdf');
             return;
         }
 
-        // Add questions
         doc.setFontSize(10);
         let questionNumber = 1;
         const startX = 10;
         const lineHeight = 5;
 
         filteredAndSearchedQuestions.forEach(question => {
-            // Check for new page
             if (yPos + (question.options.length * lineHeight) + 30 > doc.internal.pageSize.height - 10) {
                 doc.addPage();
                 yPos = 10;
@@ -132,20 +126,21 @@ function QuestionHistory() {
 
             doc.setFont('helvetica', 'bold');
             doc.text(`${questionNumber}. ${question.questionText}`, startX, yPos);
-            yPos += lineHeight * 1.5; // Slightly more space for question text
+            yPos += lineHeight * 1.5;
 
             doc.setFont('helvetica', 'normal');
             question.options.forEach((option, index) => {
-                const optionChar = String.fromCharCode(97 + index); // 'a', 'b', 'c', 'd'
+                const optionChar = String.fromCharCode(97 + index);
                 doc.text(`   ${optionChar}) ${option}`, startX, yPos);
                 yPos += lineHeight;
             });
 
-            doc.text(`   ✔ Correct Answer: ${question.correctAnswer}`, startX, yPos);
+            // Changed for PDF: Display correct answer as 1-based index
+            doc.text(`   ✔ Correct Answer: ${question.correctAnswer + 1}`, startX, yPos); // Display 1-based index
             yPos += lineHeight;
 
             doc.text(`   Difficulty: ${question.difficulty || 'N/A'}`, startX, yPos);
-            yPos += lineHeight * 2; // Extra space after each question
+            yPos += lineHeight * 2;
 
             questionNumber++;
         });
@@ -268,7 +263,7 @@ function QuestionHistory() {
                                                     ))}
                                                 </ul>
                                             </td>
-                                            <td className="px-6 py-4 text-sm text-gray-500">{question.correctAnswer}</td>
+                                            <td className="px-6 py-4 text-sm text-gray-500">{question.correctAnswer + 1}</td> {/* <-- ADDED + 1 HERE */}
                                             <td className="px-6 py-4 text-sm text-gray-500">{question.topic}</td>
                                             <td className="px-6 py-4 text-sm text-gray-500">{question.department?.name || 'N/A'}</td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{question.difficulty || 'N/A'}</td>
