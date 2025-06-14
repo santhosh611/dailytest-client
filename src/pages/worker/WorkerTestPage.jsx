@@ -1,4 +1,4 @@
-// frontend/src/pages/worker/WorkerTestPage.jsx
+// WorkerTestPage.jsx
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import QuestionDisplay from '../../components/worker/QuestionDisplay';
@@ -28,7 +28,7 @@ const WorkerTestPage = () => {
     setError,
   } = useTestSession(useParams().workerId, useParams().departmentId);
 
-  const [selectedOption, setSelectedOption] = useState(null);
+  const [selectedOption, setSelectedOption] = useState(null); // This will now store the INDEX (a number)
   const [answers, setAnswers] = useState([]);
   const [localTimeLeft, setLocalTimeLeft] = useState(null);
 
@@ -45,7 +45,6 @@ const WorkerTestPage = () => {
   useEffect(() => { selectedOptionRef.current = selectedOption; }, [selectedOption]);
   useEffect(() => { answersRef.current = answers; }, [answers]);
 
-  // SUBMIT handler unchanged
   const handleSubmitTest = useCallback(async () => {
     if (!testAttemptId) return console.error('No testAttemptId');
     const finalAnswers = [...answersRef.current];
@@ -53,8 +52,8 @@ const WorkerTestPage = () => {
     if (currQ && !finalAnswers.some(a => String(a.questionId) === String(currQ._id))) {
       finalAnswers.push({
         questionId: currQ._id,
-        selectedOption: selectedOptionRef.current,
-        isCorrect: selectedOptionRef.current === currQ.correctOption,
+        selectedOption: selectedOptionRef.current, // Sends the INDEX
+        isCorrect: selectedOptionRef.current === currQ.correctOption, // Compares INDEX
       });
     }
 
@@ -75,19 +74,18 @@ const WorkerTestPage = () => {
 
   useEffect(() => { handleSubmitTestRef.current = handleSubmitTest; }, [handleSubmitTest]);
 
-  // UPDATED: move timer-reset & backend-sync into this callback
   const handleNextQuestion = useCallback((selectedOpt, autoSkipped = false) => {
     const idx = currentQuestionIndexRef.current;
     const qs = questionsRef.current;
-    const sel = selectedOpt !== undefined ? selectedOpt : selectedOptionRef.current;
+    const sel = selectedOpt !== undefined ? selectedOpt : selectedOptionRef.current; // sel is now the index
 
     // record answer
     if (qs[idx]) {
-      const isCorrect = sel === qs[idx].correctOption;
+      const isCorrect = sel === qs[idx].correctOption; // Compares INDEX
       setAnswers(prev =>
         prev.some(a => String(a.questionId) === String(qs[idx]._id))
           ? prev
-          : [...prev, { questionId: qs[idx]._id, selectedOption: sel, isCorrect }]
+          : [...prev, { questionId: qs[idx]._id, selectedOption: sel, isCorrect }] // Stores the INDEX
       );
     }
 
@@ -98,13 +96,13 @@ const WorkerTestPage = () => {
       const next = idx + 1;
       setCurrentQuestionIndex(next);
 
-      // ← NEW: reset timer locally
+      // Reset timer locally
       setLocalTimeLeft(durationPerQuestion);
-      // ← NEW: persist new start time
+      // Persist new start time
       const newStart = new Date();
       setQuestionStartTime(newStart);
       updateTestProgress(next, newStart);
-      // ← NEW: clear prior selection
+      // Clear prior selection
       setSelectedOption(null);
     }
   }, [durationPerQuestion, updateTestProgress]);
@@ -138,7 +136,7 @@ const WorkerTestPage = () => {
   useEffect(() => {
     if (localTimeLeft > 0) {
       const timer = setInterval(() => {
-        setLocalTimeLeft(prev => {
+        setLocalTimeLeft(prev => { // Corrected: Use setLocalTimeLeft
           if (prev <= 1) {
             clearInterval(timer);
             if (currentQuestionIndexRef.current < questionsRef.current.length - 1) {
@@ -173,7 +171,10 @@ const WorkerTestPage = () => {
   if (!currentQuestion) {
     return <div className="text-center py-8">Test data unavailable.</div>;
   }
-
+console.log('WorkerTestPage State:');
+console.log('  localTimeLeft:', localTimeLeft);
+console.log('  timerActive (localTimeLeft > 0):', localTimeLeft > 0);
+console.log('  answerSelectedForCurrentQuestion:', answers.some(a => String(a.questionId) === String(currentQuestion._id)));
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-2xl">
@@ -186,14 +187,16 @@ const WorkerTestPage = () => {
             <Timer initialTime={localTimeLeft} key={currentQuestionIndex} />
           )}
         </div>
-        <QuestionDisplay
-          question={currentQuestion}
-          onOptionSelect={opt => {
-            setSelectedOption(opt);
-            handleNextQuestionRef.current(opt);
-          }}
-          selectedOption={selectedOption}
-        />
+<QuestionDisplay
+  question={currentQuestion}
+  onOptionSelect={optIndex => {
+    setSelectedOption(optIndex);
+    handleNextQuestionRef.current(optIndex);
+  }}
+  selectedOption={selectedOption}
+  answerSelectedForCurrentQuestion={answers.some(a => String(a.questionId) === String(currentQuestion._id))}
+  timerActive={localTimeLeft > 0}
+/>
       </div>
     </div>
   );
