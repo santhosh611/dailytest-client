@@ -1,6 +1,6 @@
 // frontend/src/pages/admin/AdminDashboard.jsx
 import React from 'react';
-import { useAuth } from '../../hooks/useAuth'; //
+import { useAuth } from '../../hooks/useAuth.jsx'; //
 
 function AdminDashboard() {
     const { user } = useAuth(); //

@@ -1,7 +1,7 @@
 // frontend/src/layouts/WorkerLayout.jsx
 import React from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '../hooks/useAuth.jsx';
 import Button from '../components/common/Button'; // Assuming you have a Button component
 
 function WorkerLayout() {

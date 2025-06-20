@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api'; // Assuming you have this configured
 import Button from '../common/Button'; // Assuming you have a Button component
+import Loader from '../common/Loader'; 
 
 function DepartmentWorkerListModal({ isOpen, onClose, departmentId, departmentName }) {
     const [workers, setWorkers] = useState([]);
@@ -47,7 +48,7 @@ function DepartmentWorkerListModal({ isOpen, onClose, departmentId, departmentNa
                 </h2>
 
                 {loading ? (
-                    <p className="text-center">Loading workers...</p>
+                    <Loader />
                 ) : error ? (
                     <p className="text-red-600 text-center">{error}</p>
                 ) : workers.length === 0 ? (

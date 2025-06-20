@@ -1,52 +1,40 @@
-import React, { useState, useEffect, useRef } from 'react';
+// frontend/src/components/worker/Timer.jsx
+import React, { useState, useEffect } from 'react';
 
-function Timer({ initialTime, onTimeUpdate, active }) {
-    const [time, setTime] = useState(initialTime);
-    const intervalRef = useRef(null);
-    const onTimeUpdateRef = useRef(onTimeUpdate);
-
-    useEffect(() => {
-        onTimeUpdateRef.current = onTimeUpdate;
-    }, [onTimeUpdate]);
+const Timer = ({ initialTime }) => {
+    const [timeLeft, setTimeLeft] = useState(initialTime);
 
     useEffect(() => {
-        setTime(initialTime);
+        // Only start timer if initialTime is a positive number
+        if (initialTime > 0) {
+            setTimeLeft(initialTime); // Reset timeLeft when initialTime changes (e.g., new question)
+            const timerInterval = setInterval(() => {
+                setTimeLeft(prevTime => {
+                    if (prevTime <= 1) { // Stops at 0
+                        clearInterval(timerInterval);
+                        return 0;
+                    }
+                    return prevTime - 1;
+                });
+            }, 1000);
+
+            return () => clearInterval(timerInterval); // Cleanup on unmount or initialTime change
+        } else {
+            setTimeLeft(0); // If initialTime is 0 or negative, set to 0 immediately
+        }
     }, [initialTime]);
 
-    useEffect(() => {
-        if (!active) {
-            clearInterval(intervalRef.current);
-            return;
-        }
-
-        intervalRef.current = setInterval(() => {
-            setTime(prev => {
-                const newTime = prev - 1;
-                return newTime >= 0 ? newTime : 0;
-            });
-        }, 1000);
-
-        return () => clearInterval(intervalRef.current);
-    }, [active]);
-
-    // 🔄 Notify parent when `time` changes
-    useEffect(() => {
-        if (active && onTimeUpdateRef.current) {
-            onTimeUpdateRef.current(time);
-        }
-    }, [time, active]);
-
     const formatTime = (seconds) => {
-        const min = Math.floor(seconds / 60);
-        const sec = seconds % 60;
-        return `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = seconds % 60;
+        return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
     };
 
     return (
-        <div className={`text-xl font-bold ${time <= 10 ? 'text-red-600 animate-pulse' : 'text-gray-700'}`}>
-            Time: {formatTime(time)}
+        <div className={`text-xl font-bold ${timeLeft <= 10 ? 'text-red-500' : 'text-gray-700'}`}>
+            Time Left: {formatTime(timeLeft)}
         </div>
     );
-}
+};
 
 export default Timer;
