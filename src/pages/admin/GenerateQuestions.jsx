@@ -74,12 +74,14 @@ function GenerateQuestions() {
                     <label htmlFor="topic" className="block text-sm font-medium text-gray-700 mb-1">
                         Enter Topic (e.g., "React Hooks", "MongoDB Aggregation")
                     </label>
-                    <InputField
+                    <input
                         id="topic"
                         type="text"
+                        name="topic"
+                        placeholder="Enter topic here"
                         value={topic}
                         onChange={(e) => setTopic(e.target.value)}
-                        placeholder="e.g., Data Structures, Agile Methodologies"
+                        
                         className="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
                     />
                 </div>
@@ -108,7 +110,7 @@ function GenerateQuestions() {
                     <label htmlFor="numQuestions" className="block text-sm font-medium text-gray-700 mb-1">
                         Number of Questions (1-100)
                     </label>
-                    <InputField
+                    <input
                         id="numQuestions"
                         type="number"
                         value={numQuestions}
