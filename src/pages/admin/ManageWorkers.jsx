@@ -144,7 +144,7 @@ function ManageWorkers() {
                 <InputField
                     label="Search Workers"
                     type="text"
-                    placeholder="Search by name, worker ID, or department"
+                   
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="w-full"
