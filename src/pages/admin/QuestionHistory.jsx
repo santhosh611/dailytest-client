@@ -175,25 +175,24 @@ function QuestionHistory() {
                     </div>
                     <div>
                         <label htmlFor="selectedDate" className="block text-sm font-medium text-gray-700 mb-1">Filter by Date Generated</label>
-                        <InputField
+                        <input
                             id="selectedDate"
                             name="selectedDate"
                             type="date"
                             value={selectedDate}
-                            onChange={handleDateChange}
-                            className="w-full"
+                            onChange={handleDateChange}                          
+                            className="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
                         />
                     </div>
                     <div>
                         <label htmlFor="filterTopic" className="block text-sm font-medium text-gray-700 mb-1">Filter by Topic (Optional)</label>
-                        <InputField
+                        <input
                             id="filterTopic"
                             name="topic"
                             type="text"
                             value={filters.topic}
                             onChange={handleFilterChange}
-                            placeholder="e.g., React, MongoDB"
-                            className="w-full"
+                            className="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
                         />
                     </div>
                 </div>
@@ -224,7 +223,7 @@ function QuestionHistory() {
                         )}
                     </div>
                     <div className="mb-4">
-                        <InputField
+                        <input
                             label="Search Questions"
                             type="text"
                             value={searchTerm}
