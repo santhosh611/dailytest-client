@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
-import { useAuth } from '../../hooks/useAuth';
+import { useAuth } from '../../hooks/useAuth.jsx';
 import InputField from '../../components/common/InputField';
 import Button from '../../components/common/Button';
 
@@ -13,6 +13,8 @@ function WorkerDashboard() {
     const [error, setError] = useState('');
     const [hasTests, setHasTests] = useState(false); // State to track if tests are available for worker
     const [testAlreadyTaken, setTestAlreadyTaken] = useState(false); // <-- NEW STATE
+    const [currentDepartmentTopic, setCurrentDepartmentTopic] = useState(null); // NEW STATE: To store the latest topic for navigation
+
 
     const navigate = useNavigate();
     const { user } = useAuth(); // The currently logged-in user (from localStorage)
@@ -23,6 +25,8 @@ function WorkerDashboard() {
             setError('');
             setHasTests(false); // Reset this state on each fetch
             setTestAlreadyTaken(false); // <-- Reset new state
+            setCurrentDepartmentTopic(null); // Reset topic on each fetch
+
 
             try {
                 if (user?.role === 'admin') {
@@ -32,11 +36,13 @@ function WorkerDashboard() {
                 } else if (user?.role === 'worker' && user?.department?._id && user?._id) { // Ensure user._id exists
                     // Worker view: check for available tests for their department
                     // Modified: Pass workerId in the URL now
-                    const questionsRes = await api.get(`/questions/${user.department._id}/${user._id}`); 
-                    if (questionsRes.data && questionsRes.data.length > 0) {
+                    const questionsRes = await api.get(`/questions/${user.department._id}/${user._id}`);
+                    if (questionsRes.data && questionsRes.data.questions.length > 0) { // Check for questions array in data
                         setHasTests(true); // Tests are available if questions are returned
+                        setCurrentDepartmentTopic(questionsRes.data.latestTopic); // Store the latest topic from the backend
                     } else {
                         setHasTests(false); // No questions, so no tests
+                        setCurrentDepartmentTopic(null); // No topic available
                     }
                 } else {
                     // Not a recognized user role or missing info, redirect to home
@@ -51,10 +57,12 @@ function WorkerDashboard() {
                 if (err.response && err.response.status === 404 && user?.role === 'worker') {
                     setHasTests(false); // No questions found for department
                     setError(''); // Clear general error as 404 is expected for 'no questions'
+                    setCurrentDepartmentTopic(null); // No topic available on 404
                 } else if (err.response && err.response.status === 403) { // <-- NEW: Handle 403 response
                     setTestAlreadyTaken(true);
                     setError(err.response?.data?.message || 'You have already taken the test for today.');
                     setHasTests(false); // No new tests available
+                    setCurrentDepartmentTopic(null); // No topic available on 403
                 } else {
                     setError(err.response?.data?.message || 'Failed to load dashboard data.');
                 }
@@ -66,10 +74,12 @@ function WorkerDashboard() {
     }, [user, navigate]);
 
     const handleTakeTest = () => {
-        if (user.department && user.department._id && user._id) {
-            navigate(`/worker/${user._id}/test/${user.department._id}`);
+        // Ensure currentDepartmentTopic is available before navigating
+        if (user.department && user.department._id && user._id && currentDepartmentTopic) {
+            // Pass the topic as a query parameter
+            navigate(`/worker/${user._id}/test/${user.department._id}?topic=${currentDepartmentTopic}`);
         } else {
-            alert('Your profile does not have a department or worker ID assigned. Please contact admin.');
+            alert('Your profile does not have a department or worker ID assigned, or no test topic is available. Please contact admin.');
         }
     };
 
@@ -146,7 +156,7 @@ function WorkerDashboard() {
         if (error && !testAlreadyTaken) { // Show general error if not already taken
             return (
                 <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-                    <p className="text-red-600">Error: {error}</p>
+                    <p className="text-red-600">{error}</p>
                 </div>
             );
         }
