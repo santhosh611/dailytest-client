@@ -122,7 +122,7 @@ function ManageWorkers() {
 
     return (
         <div className="p-6 bg-gradient-to-br from-blue-50 to-indigo-100 text-gray-800 min-h-screen">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-6">Manage Workers</h2>
+            <h2 className="text-2xl font-semibold text-gray-800 mb-6">Manage Employees</h2>
 
             {/* Add Worker Button */}
             <Button
@@ -130,7 +130,7 @@ function ManageWorkers() {
                 className="mb-6 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50"
                 disabled={isModalOpen || actionLoading} // Disable if modal is open or action is ongoing
             >
-                Add New Worker
+                Add New Employee
             </Button>
 
             {/* Global messages (e.g., from delete operation) */}
@@ -142,7 +142,7 @@ function ManageWorkers() {
             {/* Search Bar */}
             <div className="mb-4">
                 <InputField
-                    label="Search Workers"
+                    label="Search Employees"
                     type="text"
                    
                     value={searchTerm}
@@ -152,7 +152,7 @@ function ManageWorkers() {
             </div>
 
             {/* Worker List */}
-            <h3 className="text-xl font-medium mb-4">Existing Workers</h3>
+            <h3 className="text-xl font-medium mb-4">Existing Employee</h3>
             {loading ? (
                 <p>Loading workers...</p>
             ) : filteredWorkers.length === 0 ? (
@@ -166,7 +166,7 @@ function ManageWorkers() {
                                     Name
                                 </th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Worker ID
+                                    Employee ID
                                 </th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Department
