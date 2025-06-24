@@ -156,7 +156,7 @@ function ManageWorkers() {
             {loading ? (
                 <p>Loading workers...</p>
             ) : filteredWorkers.length === 0 ? (
-                <p className="text-gray-600">No workers found matching your search criteria.</p>
+                <p className="text-gray-600">No employees found matching your search criteria.</p>
             ) : (
                 <div className="overflow-x-auto">
                     <table className="min-w-full divide-y divide-gray-200">
