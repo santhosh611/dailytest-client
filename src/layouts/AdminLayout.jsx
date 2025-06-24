@@ -113,7 +113,7 @@ function AdminLayout() {
                 onClick={() => setIsSidebarOpen(false)}
               >
                 <Users className="h-5 w-5 text-emerald-300 group-hover:text-emerald-400 transition" />
-                <span className="font-medium group-hover:text-emerald-100">Manage Workers</span>
+                <span className="font-medium group-hover:text-emerald-100">Manage Employees</span>
               </Link>
             </li>
             <li>
