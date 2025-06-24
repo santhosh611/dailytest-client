@@ -109,7 +109,7 @@ function WorkerDashboard() {
                 </div>
 
                 {loading ? (
-                    <p>Loading worker profiles...</p>
+                    <p>Loading employee profiles...</p>
                 ) : error ? (
                     <p className="text-red-600">{error}</p>
                 ) : filteredWorkers.length === 0 ? (
