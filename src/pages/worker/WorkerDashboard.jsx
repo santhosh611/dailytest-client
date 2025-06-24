@@ -99,7 +99,7 @@ function WorkerDashboard() {
 
                 <div className="mb-4">
                     <InputField
-                        label="Search Worker Profiles"
+                        label="Search Employee Profiles"
                         type="text"
                         placeholder="Search by name or ID..."
                         value={searchTerm}
