@@ -130,7 +130,7 @@ function WorkerLogin() {
           alt="Logo"
           className="logo"
         />
-        <h1 className="title">Worker Login</h1>
+        <h1 className="title">Employee Login</h1>
         <div className="searchbar-glass">
           <FaLock className="search-icon" />
           <input
