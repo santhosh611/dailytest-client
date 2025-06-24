@@ -61,7 +61,7 @@ function WorkerFormModal({
                     &times;
                 </button>
                 <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
-                    {isEditing ? 'Edit Worker' : 'Add New Worker'}
+                    {isEditing ? 'Edit Employee' : 'Add New Worker'}
                 </h2>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <InputField
