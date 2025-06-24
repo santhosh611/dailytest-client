@@ -145,7 +145,7 @@ function WorkerLogin() {
         {loadingWorkers ? (
           <div className="loading-container">
             <FaSpinner className="loading-spinner" />
-            <p>Loading worker profiles...</p>
+            <p>Loading employee profiles...</p>
           </div>
         ) : error && !modalOpen ? (
           <div className="error-container">
@@ -154,7 +154,7 @@ function WorkerLogin() {
           </div>
         ) : filteredWorkers.length === 0 ? (
           <div className="no-workers">
-            <p>No workers found matching your search criteria.</p>
+            <p>No employee found matching your search criteria.</p>
           </div>
         ) : (
           <div className="workers-grid">
