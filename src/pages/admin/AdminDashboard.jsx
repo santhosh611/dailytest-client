@@ -12,11 +12,11 @@ function AdminDashboard() {
             <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <div className="bg-blue-500 text-white p-6 rounded-lg shadow-md">
                     <h3 className="text-xl font-semibold mb-2">Manage Departments</h3>
-                    <p>Add new departments or view existing ones and their worker counts.</p>
+                    <p>Add new departments or view existing ones and their Employee counts.</p>
                 </div>
                 <div className="bg-green-500 text-white p-6 rounded-lg shadow-md">
-                    <h3 className="text-xl font-semibold mb-2">Manage Workers</h3>
-                    <p>Create new worker accounts and assign them to departments.</p>
+                    <h3 className="text-xl font-semibold mb-2">Manage Employees</h3>
+                    <p>Create new Employee accounts and assign them to departments.</p>
                 </div>
                 <div className="bg-purple-500 text-white p-6 rounded-lg shadow-md">
                     <h3 className="text-xl font-semibold mb-2">Generate Questions</h3>
